@@ -6,7 +6,7 @@ import re
 ### https://www.sec.gov/search-filings/edgar-application-programming-interfaces
 
 ### using your email within the header
-headers = {'User-Agent': "duchuynguyen1802@gmail.com"}
+headers = {'User-Agent': ###your email here}
 
 ### Load Financial Data into your program for later usage (plotting and analysis)
 ### Caution: the Data class is still in development and few columns are empty. Feel free to load relevant real world data
