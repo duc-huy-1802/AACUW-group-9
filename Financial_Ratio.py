@@ -15,9 +15,6 @@ class Ratio:
 		cik_dict = dat.get_cik_code()
 		dat.get_financial_data(cik_dict, self.df)
 		# stock = Stock([])
-		# self.color_dict = {'Tesla, Inc.':'r',
-		# 		'NVIDIA CORP':'g',
-		# 		'MICROSOFT CORP':'b'}
 
 	'''
 	Give back the current dataframe
