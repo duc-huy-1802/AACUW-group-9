@@ -1,12 +1,12 @@
 import requests
 import pandas as pd
-import re
 
 ### Getting our financial data from the SEC EDGAR API, please consult the following link for reference
 ### https://www.sec.gov/search-filings/edgar-application-programming-interfaces
+### Get the company name from the link: https://www.sec.gov/files/company_tickers.json
 
 ### using your email within the header
-headers = {'User-Agent': ###your email here}
+headers = {'User-Agent': 'duchuynguyen1802@gmail.com'}
 
 ### Load Financial Data into your program for later usage (plotting and analysis)
 ### Caution: the Data class is still in development and few columns are empty. Feel free to load relevant real world data
@@ -59,13 +59,25 @@ class Data:
 				f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik_dict[comp]}.json",
 				headers=headers
 			)
+			# Account for different taxonomy tax within the period
 			for label in self.label_lst:
 				data = pd.DataFrame.from_dict(company_fact_requests.json()['facts']['us-gaap'][label])
-				# Account for different taxonomy tax within the period
-				if label == 'Revenues' and comp == 'MICROSOFT CORP':
-					data = pd.DataFrame.from_dict(company_fact_requests.json()['facts']['us-gaap']['RevenueFromContractWithCustomerExcludingAssessedTax'])
+				if label == 'Revenues':
+					revenue_fallbacks = [
+						'RevenueFromContractWithCustomerExcludingAssessedTax',
+						'SalesRevenueNet',
+						'SalesRevenueGoodsNet',
+						'Revenues',
+						'Revenue'
+					]
+					data = None
+					for rev_label in revenue_fallbacks:
+						if rev_label in company_fact_requests.json()['facts']['us-gaap']:
+							data = pd.DataFrame.from_dict(
+								company_fact_requests.json()['facts']['us-gaap'][rev_label])
+							break
 				data = pd.DataFrame.from_dict(data['units']['USD'])
-				data = data.dropna(axis = 0, subset = ['frame'])
+				data = data.dropna(axis=0, subset=['frame'])
 				for index, row in data.iterrows():
 					num = row['val']
 					if label == 'Revenues' or label == 'NetIncomeLoss':
@@ -73,6 +85,6 @@ class Data:
 						if quarter in self.quarters or quarter in self.years:
 							df.loc[(comp, quarter), label] = num
 					else:
-						quarter = row['frame'][:-1:]
+						quarter = row['frame']
 						if quarter in self.quarters:
 							df.loc[(comp, quarter), label] = num

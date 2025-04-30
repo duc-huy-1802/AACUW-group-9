@@ -15,6 +15,9 @@ class Ratio:
 		cik_dict = dat.get_cik_code()
 		dat.get_financial_data(cik_dict, self.df)
 		# stock = Stock([])
+		# self.color_dict = {'Tesla, Inc.':'r',
+		# 		'NVIDIA CORP':'g',
+		# 		'MICROSOFT CORP':'b'}
 
 	'''
 	Give back the current dataframe
@@ -93,14 +96,45 @@ class Ratio:
 		plt.show()
 
 ### Feel free to adjust this to match your company and required quarters
-instance = Ratio(['NVIDIA CORP', 'MICROSOFT CORP', 'Tesla, Inc.'],
+instance1 = Ratio(['Apple Inc.'],
+				 ['Assets', 'AssetsCurrent', 'Revenues', 'LiabilitiesAndStockholdersEquity', 'Liabilities',
+				 'LiabilitiesCurrent', 'StockholdersEquity', 'NetIncomeLoss'],
+		 		 ['CY2023Q1', 'CY2023Q2', 'CY2023Q3', 'CY2023Q4', 'CY2024Q1', 'CY2024Q2', 'CY2024Q3', 'CY2024Q4']
+				)
+instance1.graph_ratios(['ROA', 'ROE', 'Asset Turnover Ratio'],
+		 ['Apple Inc.'], "appl_financial_ratios_1.png")
+instance1.graph_ratios(['Current Ratio', 'Debt-to-Equity Ratio'],
+		 ['Apple Inc.'], "aapl_financial_ratios_2.png")
+#
+# instance2 = Ratio(['NVIDIA CORP'],
+# 				 ['Assets', 'AssetsCurrent', 'Revenues', 'LiabilitiesAndStockholdersEquity', 'Liabilities',
+# 				 'LiabilitiesCurrent', 'StockholdersEquity', 'NetIncomeLoss'],
+# 		 		 ['CY2023Q1', 'CY2023Q2', 'CY2023Q3', 'CY2023Q4', 'CY2024Q1', 'CY2024Q2', 'CY2024Q3', 'CY2024Q4']
+# 				)
+# instance2.graph_ratios(['ROA', 'ROE', 'Asset Turnover Ratio'],
+# 		 ['NVIDIA CORP'], "jnj_financial_ratios_1.png")
+# instance2.graph_ratios(['Current Ratio', 'Debt-to-Equity Ratio'],
+# 		 ['NVIDIA CORP'], "jnj_financial_ratios_2.png")
+#
+instance = Ratio(['JOHNSON & JOHNSON'],
 				 ['Assets', 'AssetsCurrent', 'Revenues', 'LiabilitiesAndStockholdersEquity', 'Liabilities',
 				 'LiabilitiesCurrent', 'StockholdersEquity', 'NetIncomeLoss'],
 		 		 ['CY2023Q1', 'CY2023Q2', 'CY2023Q3', 'CY2023Q4', 'CY2024Q1', 'CY2024Q2', 'CY2024Q3', 'CY2024Q4']
 				)
 instance.data_eda()
 instance.graph_ratios(['ROA', 'ROE', 'Asset Turnover Ratio'],
-		 ['NVIDIA CORP', 'MICROSOFT CORP', 'Tesla, Inc.'], "plot1.png")
+		 ['JOHNSON & JOHNSON'], "jnj_financial_ratios_1.png")
 instance.graph_ratios(['Current Ratio', 'Debt-to-Equity Ratio'],
-		 ['NVIDIA CORP', 'MICROSOFT CORP', 'Tesla, Inc.'], "plot2.png")
+		 ['JOHNSON & JOHNSON'], "jnj_financial_ratios_2.png")
+
+instance3 = Ratio(['VISA INC.'],
+				 ['Assets', 'Revenues', 'LiabilitiesAndStockholdersEquity', 'Liabilities',
+				 'StockholdersEquity', 'NetIncomeLoss'],
+		 		 ['CY2023Q1', 'CY2023Q2', 'CY2023Q3', 'CY2023Q4', 'CY2024Q1', 'CY2024Q2', 'CY2024Q3', 'CY2024Q4']
+				)
+instance3.graph_ratios(['ROA', 'ROE', 'Asset Turnover Ratio'],
+		 ['VISA INC.'], "financial_services_financial_ratios_1.png")
+instance3.graph_ratios(['Debt-to-Equity Ratio'],
+		 ['VISA INC.'], "financial_services_financial_ratios_2.png")
+
 
