@@ -14,10 +14,6 @@ class Ratio:
 		self.df = dat.create_dataframe()
 		cik_dict = dat.get_cik_code()
 		dat.get_financial_data(cik_dict, self.df)
-		# stock = Stock([])
-		# self.color_dict = {'Tesla, Inc.':'r',
-		# 		'NVIDIA CORP':'g',
-		# 		'MICROSOFT CORP':'b'}
 
 	'''
 	Give back the current dataframe
@@ -39,12 +35,12 @@ class Ratio:
 		print('Our current financial data tags are:', self.df.columns)
 		indexes = self.df.index.tolist()
 		print(f"Our current companies and quarters are: {indexes}")
+		print("The number of missing entries per labels are:")
 		print(self.df.isna().sum())
 
 	'''
 	Calculate the required ratio for the current company in the current quarter
 	'''
-	# Need to work on the stock prices again
 	def calculate_ratio(self, ratio, comp, quarter):
 		if ratio == 'ROA' or ratio == 'ROE':
 			num = self.df.loc[(comp, quarter), 'Assets'] if ratio == 'ROA' else self.df.loc[(comp, quarter), 'StockholdersEquity']
@@ -57,29 +53,29 @@ class Ratio:
 			return self.df.loc[(comp, quarter), 'Liabilities'] / self.df.loc[(comp, quarter), 'StockholdersEquity']
 		elif ratio == 'Asset Turnover Ratio':
 			return (self.df.loc[(comp, quarter), 'Revenues'] / self.df.loc[(comp, quarter), 'Assets']) * 100
-		elif ratio == 'P/E':
-			'''
-			at the end of the reporting day
-			stock_price =
-			return stock_price / pd.to_numeric(self.df['EarningsPerShareBasic'][quarter])
-			'''
-			pass
 		else:
 			return -1
 
-	'''
-	Graph the required ratios for relevant list of companies
-	'''
-	def graph_ratios(self, ratio_list, comp_list, name):
-		row = 0
-		col = 0
+	"""
+	Load ratio values into dataframe based on the ratio list and companies list
+	"""
+
+	def load_ratio(self, ratio_list, comp_list):
 		df = pd.DataFrame(columns=['Ratio', 'Comp', 'Quarter', 'Value'])
 		for ratio in ratio_list:
 			for comp in comp_list:
 				for quarter in self.quarters:
 					x_val = quarter[-4::]
-					df = pd.concat([df, pd.DataFrame.from_dict([{'Ratio' : ratio, 'Comp' : comp, 'Quarter' : x_val,
-							 'Value' : self.calculate_ratio(ratio, comp, quarter)}])], ignore_index=True)
+					df = pd.concat([df, pd.DataFrame.from_dict([{'Ratio': ratio, 'Comp': comp, 'Quarter': x_val,
+																 'Value': self.calculate_ratio(ratio, comp, quarter)}])],
+								   							   ignore_index=True)
+		return df
+
+	'''
+	Graph the required ratios for relevant list of companies
+	'''
+	def graph_ratios(self, ratio_list, comp_list, name):
+		df = self.load_ratio(ratio_list, comp_list)
 		ax = sns.relplot(data = df, kind = 'line', facet_kws={"sharey": False},
 					x = 'Quarter', y = 'Value', hue = 'Comp', col = 'Ratio', col_wrap = 3, height = 5, aspect = 1.5)
 		# sns.move_legend(ax, "center right")
@@ -94,47 +90,4 @@ class Ratio:
 		plt.savefig(name)
 		plt.close()
 		plt.show()
-
-### Feel free to adjust this to match your company and required quarters
-instance1 = Ratio(['Apple Inc.'],
-				 ['Assets', 'AssetsCurrent', 'Revenues', 'LiabilitiesAndStockholdersEquity', 'Liabilities',
-				 'LiabilitiesCurrent', 'StockholdersEquity', 'NetIncomeLoss'],
-		 		 ['CY2023Q1', 'CY2023Q2', 'CY2023Q3', 'CY2023Q4', 'CY2024Q1', 'CY2024Q2', 'CY2024Q3', 'CY2024Q4']
-				)
-instance1.graph_ratios(['ROA', 'ROE', 'Asset Turnover Ratio'],
-		 ['Apple Inc.'], "appl_financial_ratios_1.png")
-instance1.graph_ratios(['Current Ratio', 'Debt-to-Equity Ratio'],
-		 ['Apple Inc.'], "aapl_financial_ratios_2.png")
-#
-# instance2 = Ratio(['NVIDIA CORP'],
-# 				 ['Assets', 'AssetsCurrent', 'Revenues', 'LiabilitiesAndStockholdersEquity', 'Liabilities',
-# 				 'LiabilitiesCurrent', 'StockholdersEquity', 'NetIncomeLoss'],
-# 		 		 ['CY2023Q1', 'CY2023Q2', 'CY2023Q3', 'CY2023Q4', 'CY2024Q1', 'CY2024Q2', 'CY2024Q3', 'CY2024Q4']
-# 				)
-# instance2.graph_ratios(['ROA', 'ROE', 'Asset Turnover Ratio'],
-# 		 ['NVIDIA CORP'], "jnj_financial_ratios_1.png")
-# instance2.graph_ratios(['Current Ratio', 'Debt-to-Equity Ratio'],
-# 		 ['NVIDIA CORP'], "jnj_financial_ratios_2.png")
-#
-instance = Ratio(['JOHNSON & JOHNSON'],
-				 ['Assets', 'AssetsCurrent', 'Revenues', 'LiabilitiesAndStockholdersEquity', 'Liabilities',
-				 'LiabilitiesCurrent', 'StockholdersEquity', 'NetIncomeLoss'],
-		 		 ['CY2023Q1', 'CY2023Q2', 'CY2023Q3', 'CY2023Q4', 'CY2024Q1', 'CY2024Q2', 'CY2024Q3', 'CY2024Q4']
-				)
-instance.data_eda()
-instance.graph_ratios(['ROA', 'ROE', 'Asset Turnover Ratio'],
-		 ['JOHNSON & JOHNSON'], "jnj_financial_ratios_1.png")
-instance.graph_ratios(['Current Ratio', 'Debt-to-Equity Ratio'],
-		 ['JOHNSON & JOHNSON'], "jnj_financial_ratios_2.png")
-
-instance3 = Ratio(['VISA INC.'],
-				 ['Assets', 'Revenues', 'LiabilitiesAndStockholdersEquity', 'Liabilities',
-				 'StockholdersEquity', 'NetIncomeLoss'],
-		 		 ['CY2023Q1', 'CY2023Q2', 'CY2023Q3', 'CY2023Q4', 'CY2024Q1', 'CY2024Q2', 'CY2024Q3', 'CY2024Q4']
-				)
-instance3.graph_ratios(['ROA', 'ROE', 'Asset Turnover Ratio'],
-		 ['VISA INC.'], "financial_services_financial_ratios_1.png")
-instance3.graph_ratios(['Debt-to-Equity Ratio'],
-		 ['VISA INC.'], "financial_services_financial_ratios_2.png")
-
 
