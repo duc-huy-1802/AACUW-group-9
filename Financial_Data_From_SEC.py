@@ -6,7 +6,7 @@ import pandas as pd
 ### Get the company name from the link: https://www.sec.gov/files/company_tickers.json
 
 ### using your email within the header
-headers = {'User-Agent': 'duchuynguyen1802@gmail.com'}
+headers = {'User-Agent': youremailhere@gmail.com}
 
 ### Load Financial Data into your program for later usage (plotting and analysis)
 ### Caution: the Data class is still in development and few columns are empty. Feel free to load relevant real world data
