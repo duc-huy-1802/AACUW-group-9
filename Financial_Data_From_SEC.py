@@ -1,12 +1,13 @@
 import requests
 import pandas as pd
+import csv
 
 ### Getting our financial data from the SEC EDGAR API, please consult the following link for reference
 ### https://www.sec.gov/search-filings/edgar-application-programming-interfaces
 ### Get the company name from the link: https://www.sec.gov/files/company_tickers.json
 
 ### using your email within the header
-headers = {'User-Agent': youremailhere@gmail.com}
+headers = {'User-Agent': 'youremailhere@gmail.com'}
 
 ### Load Financial Data into your program for later usage (plotting and analysis)
 ### Caution: the Data class is still in development and few columns are empty. Feel free to load relevant real world data
@@ -20,6 +21,8 @@ class Data:
 		for quarter in self.quarters:
 			self.years.add(quarter[:-2:])
 
+	def get_years(self):
+		return self.years
 	"""
 	Generate a cik code references for companies
 	"""
@@ -75,12 +78,13 @@ class Data:
 				'Revenues': [
 					'RevenueFromContractWithCustomerExcludingAssessedTax',
 					'SalesRevenueNet',
-					'SalesRevenueGoodsNet',
 					'Revenues',
 					'Revenue',
 					'RevenueNet',
-					'OperatingRevenue',
-					'SalesRevenueNet'
+					'SalesRevenueServicesNet',
+					'SalesRevenueGoodsNet',
+					'RevenueFromGoodsSold',
+					'TotalRevenuesAndOtherIncome',
 				],
 				'Assets': [
 					'Assets', 'AssetsNet', 'TotalAssets'
@@ -138,7 +142,9 @@ class Data:
 					if quarter in self.years:
 						df.loc[(comp, f"{quarter}Q4"), label] = self.calculate_last_quarter(data, entry, quarter)
 
-	# Account for the "I": interim notation in the SEC data
+	'''
+	Account for the "I": interim notation in the SEC data
+	'''
 	def normalize_quarter(self, quarter):
 		if quarter and quarter.endswith("I"):
 			return quarter[:-1]

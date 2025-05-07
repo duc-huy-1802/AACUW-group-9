@@ -10,10 +10,10 @@ class Ratio:
 	def  __init__(self, comp_list, label_lst, quarters):
 		self.quarters = quarters
 		self.label_lst = label_lst
-		dat = Data(comp_list, label_lst, quarters)
-		self.df = dat.create_dataframe()
-		cik_dict = dat.get_cik_code()
-		dat.get_financial_data(cik_dict, self.df)
+		self.dat = Data(comp_list, label_lst, quarters)
+		self.df = self.dat.create_dataframe()
+		cik_dict = self.dat.get_cik_code()
+		self.dat.get_financial_data(cik_dict, self.df)
 
 	'''
 	Give back the current dataframe
@@ -52,7 +52,7 @@ class Ratio:
 		elif ratio == 'Debt-to-Equity Ratio':
 			return self.df.loc[(comp, quarter), 'Liabilities'] / self.df.loc[(comp, quarter), 'StockholdersEquity']
 		elif ratio == 'Asset Turnover Ratio':
-			return (self.df.loc[(comp, quarter), 'Revenues'] / self.df.loc[(comp, quarter), 'Assets']) * 100
+			return (self.df.loc[(comp, quarter), 'Revenues'] / self.df.loc[(comp, quarter), 'Assets'])
 		else:
 			return -1
 
@@ -91,3 +91,21 @@ class Ratio:
 		plt.close()
 		plt.show()
 
+	"""
+	Accommodate for the gaps in 2015-2016 fillings that the program can not
+	parse from SEC fillings. Load from additional csv files instead
+	"""
+	def add_data(self, label_lst, quarters_lst):
+		for label in label_lst:
+			curr_df = pd.read_csv(f"additional_data/magnificent7_2015_2016_quarterly_{label}.csv")
+			for index, row in curr_df.iterrows():
+				for quarter in quarters_lst:
+					self.df.loc[(row['Company'], quarter), label] = row[quarter]
+		aapl_df = pd.read_csv("additional_data/alphabet_2015Q12_additional.csv")
+		for index, row in aapl_df.iterrows():
+			for quarter in ['CY2015Q1', 'CY2015Q2']:
+				self.df.loc[('Alphabet Inc.', quarter), row['Metric']] = row[quarter]
+		if 'CY2023' in self.dat.get_years():
+			nvidia_df = pd.read_csv("additional_data/nvidia_2023_2024_quarterly_revenue.csv", index_col=0)
+			for quarter in nvidia_df.columns:
+				self.df.loc[('NVIDIA CORP', quarter), 'Revenues'] = nvidia_df.loc['Revenues', quarter]
